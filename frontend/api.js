@@ -10,7 +10,7 @@
  */
 const API_BASE = window.location.hostname === 'localhost'
   ? 'http://localhost:8000'
-  : 'https://your-service-name.up.railway.app';  // ← Replace with your Railway URL
+  : 'https://web-production-3b0ce.up.railway.app';
 
 /**
  * Generic fetch wrapper with error handling.
