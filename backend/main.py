@@ -1,4 +1,5 @@
 import asyncio
+import re
 import json
 import os
 from fastapi import FastAPI, HTTPException, Query, Request
@@ -22,9 +23,10 @@ app = FastAPI(
 )
 
 # ---------------------------------------------------------------------------
-# CORS — tightened for the Next.js dev server and common local ports
+# CORS — allows all Vercel deployments + local dev origins
 # ---------------------------------------------------------------------------
 
+# Explicit localhost origins for local development
 ALLOWED_ORIGINS = [
     "http://localhost:3000",   # Next.js dev server
     "http://127.0.0.1:3000",
@@ -39,18 +41,23 @@ ALLOWED_ORIGINS = [
     "null",                    # file:// origin
 ]
 
-# Add production Vercel URL from environment variables
-VERCEL_URL = os.environ.get("VERCEL_URL", "")
-if VERCEL_URL:
-    ALLOWED_ORIGINS.append(VERCEL_URL)
-
+# Also allow any explicit FRONTEND_URL set via environment variable
 FRONTEND_URL = os.environ.get("FRONTEND_URL", "")
 if FRONTEND_URL:
     ALLOWED_ORIGINS.append(FRONTEND_URL)
 
+# Regex pattern — allows ALL *.vercel.app subdomains (production + preview)
+# and all localhost ports automatically, without needing to update env vars
+ALLOWED_ORIGIN_REGEX = (
+    r"https://.*\.vercel\.app"
+    r"|http://localhost:\d+"
+    r"|http://127\.0\.0\.1:\d+"
+)
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=ALLOWED_ORIGINS,
+    allow_origin_regex=ALLOWED_ORIGIN_REGEX,
     allow_credentials=True,
     allow_methods=["GET", "POST", "OPTIONS"],
     allow_headers=["Content-Type", "Authorization"],
