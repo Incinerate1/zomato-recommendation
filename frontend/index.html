@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Zomato AI — Discover Your Perfect Restaurant</title>
+  <meta name="description" content="AI-powered restaurant recommendations. Tell us your cravings and our AI concierge will curate the perfect dining experience for you." />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <!-- Background -->
+  <div class="bg-radial"></div>
+
+  <!-- Floating Emojis -->
+  <div class="floating-emojis">
+    <span class="floating-emoji" style="top: 15%; left: 10%; font-size: 32px; animation-delay: 0s;">🍕</span>
+    <span class="floating-emoji" style="top: 25%; right: 15%; font-size: 28px; animation-delay: -5s;">🍜</span>
+    <span class="floating-emoji" style="top: 60%; left: 20%; font-size: 40px; animation-delay: -10s;">🥗</span>
+    <span class="floating-emoji" style="top: 75%; right: 10%; font-size: 32px; animation-delay: -15s;">🍱</span>
+    <span class="floating-emoji" style="top: 40%; left: 50%; font-size: 24px; animation-delay: -3s;">🌮</span>
+  </div>
+
+  <!-- Navbar -->
+  <header class="navbar" id="navbar">
+    <div class="navbar-logo">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 60" fill="none">
+        <path d="M15 10c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2s2-.9 2-2V12c0-1.1-.9-2-2-2zM21 10c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2s2-.9 2-2V12c0-1.1-.9-2-2-2zM27 10c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2s2-.9 2-2V12c0-1.1-.9-2-2-2zM21 28c-5 0-9 4-9 9v13h18V37c0-5-4-9-9-9zM21 50h-7v-3h7v3z" fill="#E23744"/>
+        <text x="45" y="42" font-family="Outfit, sans-serif" font-weight="700" font-size="28" fill="#F0F0F5">Zomato</text>
+        <rect x="145" y="18" width="40" height="24" rx="12" fill="#E23744"/>
+        <text x="153" y="36" font-family="Outfit, sans-serif" font-weight="700" font-size="14" fill="#F0F0F5">AI</text>
+      </svg>
+    </div>
+    <div class="navbar-badge">Powered by Groq + Llama 3</div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="main-content">
+
+    <!-- ==================== INPUT VIEW ==================== -->
+    <div id="input-view">
+      <!-- Hero -->
+      <section class="hero">
+        <h1 class="hero-title">Discover Your Perfect Meal</h1>
+        <p class="hero-subtitle">Tell us what you're craving, and let our AI concierge curate an elite dining experience just for you.</p>
+      </section>
+
+      <!-- Preference Form -->
+      <form class="form-card glass" id="preference-form" autocomplete="off">
+
+        <!-- Location (Dropdown) -->
+        <div class="form-group" id="location-group">
+          <label class="form-label"><span class="emoji">📍</span> Location</label>
+          <div class="dropdown-wrapper" id="location-dropdown">
+            <button type="button" class="dropdown-trigger" id="location-trigger" aria-haspopup="listbox" aria-expanded="false">
+              <span class="placeholder" id="location-display">Select a location...</span>
+              <span class="arrow">▾</span>
+            </button>
+            <div class="dropdown-menu" id="location-menu" role="listbox">
+              <input type="text" class="dropdown-search" id="location-search" placeholder="Search locations..." />
+              <div id="location-options"></div>
+            </div>
+          </div>
+          <input type="hidden" id="location-value" />
+          <div class="field-error" id="location-error">Location is required</div>
+        </div>
+
+        <!-- Cuisine (Dropdown) -->
+        <div class="form-group">
+          <label class="form-label"><span class="emoji">🍽️</span> Cuisine</label>
+          <div class="dropdown-wrapper" id="cuisine-dropdown">
+            <button type="button" class="dropdown-trigger" id="cuisine-trigger" aria-haspopup="listbox" aria-expanded="false">
+              <span class="placeholder" id="cuisine-display">Any cuisine</span>
+              <span class="arrow">▾</span>
+            </button>
+            <div class="dropdown-menu" id="cuisine-menu" role="listbox">
+              <input type="text" class="dropdown-search" id="cuisine-search" placeholder="Search cuisines..." />
+              <div id="cuisine-options"></div>
+            </div>
+          </div>
+          <input type="hidden" id="cuisine-value" />
+        </div>
+
+        <!-- Budget (Segmented Control) -->
+        <div class="form-group">
+          <label class="form-label"><span class="emoji">💰</span> Budget</label>
+          <div class="segmented-control" id="budget-control">
+            <button type="button" class="segment-btn low" data-value="low">Low</button>
+            <button type="button" class="segment-btn medium" data-value="medium">Medium</button>
+            <button type="button" class="segment-btn high" data-value="high">High</button>
+          </div>
+          <input type="hidden" id="budget-value" />
+        </div>
+
+        <!-- Minimum Rating (Slider) -->
+        <div class="form-group">
+          <div class="slider-header">
+            <label class="form-label"><span class="emoji">⭐</span> Minimum Rating</label>
+            <span class="slider-value" id="rating-display">0.0</span>
+          </div>
+          <div class="slider-wrapper">
+            <input type="range" class="rating-slider" id="rating-slider"
+                   min="0" max="5" step="0.1" value="0" />
+          </div>
+        </div>
+
+        <!-- Vibe / Extra Preferences -->
+        <div class="form-group">
+          <label class="form-label"><span class="emoji">✨</span> Vibe</label>
+          <input type="text" class="text-input" id="extra-input"
+                 placeholder="e.g. romantic, rooftop, pet-friendly"
+                 maxlength="200" />
+          <div class="char-counter"><span id="char-count">0</span> / 200</div>
+        </div>
+
+        <!-- Submit -->
+        <button type="submit" class="submit-btn" id="submit-btn">
+          <span id="submit-text">🔍 Find My Perfect Restaurant</span>
+          <div class="spinner" id="submit-spinner" style="display: none;"></div>
+        </button>
+      </form>
+
+      <!-- Quick Suggestion Chips -->
+      <div class="suggestion-chips">
+        <button class="chip" data-vibe="Quiet cafe for work">"Quiet cafe for work"</button>
+        <button class="chip" data-vibe="Authentic sushi nearby">"Authentic sushi nearby"</button>
+        <button class="chip" data-vibe="Best rooftop for sunset">"Best rooftop for sunset"</button>
+      </div>
+    </div>
+
+    <!-- ==================== LOADING VIEW ==================== -->
+    <div id="loading-view" class="loading-section">
+      <div class="loading-header">
+        <h2>🤖 Our AI is analyzing restaurants for you.</h2>
+        <p>Sifting through thousands of reviews, menus, and ratings to find your perfect match<span class="loading-dots"></span></p>
+      </div>
+      <div class="skeleton-card glass">
+        <div class="skeleton-image"></div>
+        <div class="skeleton-line skeleton-title"></div>
+        <div class="skeleton-line skeleton-tags"></div>
+        <div class="skeleton-line skeleton-text-1"></div>
+        <div class="skeleton-line skeleton-text-2"></div>
+      </div>
+      <div class="skeleton-card glass">
+        <div class="skeleton-image"></div>
+        <div class="skeleton-line skeleton-title"></div>
+        <div class="skeleton-line skeleton-tags"></div>
+        <div class="skeleton-line skeleton-text-1"></div>
+        <div class="skeleton-line skeleton-small"></div>
+      </div>
+    </div>
+
+    <!-- ==================== RESULTS VIEW ==================== -->
+    <div id="results-view" class="results-section">
+      <div class="results-header">
+        <h2 class="results-title">🎯 Top Picks for You</h2>
+        <button class="modify-btn" id="modify-btn">← Modify</button>
+      </div>
+      <div class="query-pills" id="query-pills"></div>
+      <div id="cards-container"></div>
+
+      <!-- See All Results Button -->
+      <div style="text-align: center; margin-top: 8px;">
+        <button class="modify-btn" id="new-search-btn" style="font-size: 15px; padding: 12px 28px;">🔄 New Search</button>
+      </div>
+    </div>
+
+    <!-- ==================== EMPTY STATE ==================== -->
+    <div id="empty-view" class="empty-state">
+      <div class="empty-emoji">🍽️💨</div>
+      <h3>No matches found</h3>
+      <p>Try widening your filters — adjust your location, budget, or rating to discover more options.</p>
+      <button class="retry-btn" id="retry-btn">🔄 Try Again</button>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <div class="footer-brand">Zomato AI Engine v1.2</div>
+      <div class="footer-text">Built with ❤️ using FastAPI, Groq, and Llama 3</div>
+    </footer>
+  </main>
+
+  <!-- Toast Container -->
+  <div class="toast-container" id="toast-container"></div>
+
+  <!-- Scripts -->
+  <script src="api.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

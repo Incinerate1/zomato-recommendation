@@ -1,0 +1,7 @@
+fastapi
+uvicorn[standard]
+pandas
+datasets
+groq
+sse-starlette
+python-dotenv
